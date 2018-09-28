@@ -7,27 +7,31 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
-ATTRS_FILE = "datasets/lfw_attributes.txt"  # http://www.cs.columbia.edu/CAVE/databases/pubfig/download/lfw_attributes.txt
-IMAGES_DIR = "datasets/lfw-deepfunneled"  # http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz
-RAW_IMAGES_DIR = "datasets/lfw"  # http://vis-www.cs.umass.edu/lfw/lfw.tgz
+ATTRS_FILE = "datasets/lfw_attributes.txt"          # http://www.cs.columbia.edu/CAVE/databases/pubfig/download/lfw_attributes.txt
+IMAGES_DIR = "datasets/lfw-deepfunneled"            # http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz
+RAW_IMAGES_DIR = "datasets/lfw"                     # http://vis-www.cs.umass.edu/lfw/lfw.tgz
 
 def load_dataset(use_raw=False, dx=80, dy=80, dimx=45, dimy=45):
-    """Load Dataset
-
-    Loads the `Labeled Faces in the Wild` dataset with
+    """
+    Loads the `Labeled Faces in the Wild` dataset with 
     train/test split and attributes into memory.
 
     Args:
-        use_raw (bool):
-            Flag for using raw data or not. Defaults to `False`.
-        dx (int):
-            x co-ordinate to crop the images. Defaults to 80.
-        dy (int):
-            y co-ordinate to crop the images. Defaults to 80.
-        dimx (int):
-            Width dim of the images. Defaults to 45.
-        dimy (int):
-            Height dim of the images. Defaults to 45.
+        use_raw (bool, optional):
+            Flag for using raw data or not. If unspecified, 
+            defaults to `False`.
+        dx (int, optional):
+            x co-ordinate to crop the images. If unspecified, 
+            defaults to 80.
+        dy (int, optional):
+            y co-ordinate to crop the images. If unspecified, 
+            defaults to 80.
+        dimx (int, optional):
+            Width dim of the images. If unspecified, defaults 
+            to 45.
+        dimy (int, optional):
+            Height dim of the images. If unspecified, defaults 
+            to 45.
     
     Returns:
         numpy.ndarray:

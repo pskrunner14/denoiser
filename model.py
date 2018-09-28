@@ -2,10 +2,8 @@ import keras
 import keras.layers as L
 import numpy as np
 
-def build_autoencoder(img_shape, encoder, decoder):
-    """Build Autoencoder
-
-    Builds a custom Autoencoder using Encoder and Decoder models.
+def build_autoencoder(img_shape, encoder, decoder, lr=0.002):
+    """Builds a custom Autoencoder using Encoder and Decoder models.
 
     Args:
         img_shape (tuple):
@@ -14,10 +12,14 @@ def build_autoencoder(img_shape, encoder, decoder):
             Encoder part of the autoencoder.
         decoder (keras.models.Sequential):
             Decoder part of the autoencoder.
-
+        lr (float, optional):
+            Learning rate of the optimizer. 
+            If unspecified, defaults to 0.002.
+            
     Returns:
         keras.model.Model:
-            The autoencoder model.
+            Autoencoder model consisting of encoder and 
+            decoder sequential models.
     """
     
     # Inputs and Outputs
@@ -27,21 +29,20 @@ def build_autoencoder(img_shape, encoder, decoder):
     
     # Build Model
     autoencoder = keras.models.Model(inputs=inp, outputs=reconstruction)
-    autoencoder.compile(optimizer='adamax', loss='mse')
+    optimizer = keras.optimizers.Adamax(lr=lr)
+    autoencoder.compile(optimizer=optimizer, loss='mse')
     
     return autoencoder
 
-"""
-Creates a Linear PCA Autoencoder
-"""
-def create_pca_autoencoder(img_shape, emb_size):
-    """Create PCA Autoencoder
-
-    Creates a Linear PCA Autoencoder.
+def create_pca_autoencoder(img_shape, lr, emb_size):
+    """Creates a Linear PCA Autoencoder.
 
     Args:
         img_shape (tuple):
             Shape of input image.
+        lr (float):
+            Learning rate of the optimizer for training 
+            the autoencoder model.
         emb_size (int):
             No. of embedding dims for encoder output.
 
@@ -62,16 +63,17 @@ def create_pca_autoencoder(img_shape, emb_size):
     decoder.add(L.Dense(np.prod(img_shape)))
     decoder.add(L.Reshape(img_shape))
     
-    return build_autoencoder(img_shape, encoder, decoder)
+    return build_autoencoder(img_shape, encoder, decoder, lr=lr)
 
-def create_deep_conv_autoencoder(img_shape, emb_size):
-    """Create Deep Conv Autoencoder
-
-    Creates a Deep Convolutional Autoencoder.
+def create_deep_conv_autoencoder(img_shape, lr, emb_size):
+    """Creates a Deep Convolutional Denoising Autoencoder.
 
     Args:
         img_shape (tuple):
             Shape of input image.
+        lr (float):
+            Learning rate of the optimizer for training 
+            the autoencoder model.
         emb_size (int):
             No. of embedding dims for encoder output.
 
@@ -104,4 +106,4 @@ def create_deep_conv_autoencoder(img_shape, emb_size):
     decoder.add(L.Conv2DTranspose(32, kernel_size=(3, 3), padding='same', activation='elu'))
     decoder.add(L.Conv2DTranspose(3, kernel_size=(3, 3), padding='same', activation=None))
     
-    return build_autoencoder(img_shape, encoder, decoder)
+    return build_autoencoder(img_shape, encoder, decoder, lr=lr)

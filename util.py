@@ -7,9 +7,7 @@ import keras.backend as K
 import matplotlib.pyplot as plt
 
 def reset_tf_session():
-    """Reset TF Session
-
-    Resets the TensorFlow session for Keras `backend`.
+    """Resets the TensorFlow session for Keras `backend`.
 
     Returns:
         tf.Session: New tensorflow session object.
@@ -27,27 +25,25 @@ def reset_tf_session():
     return sess
 
 def apply_gaussian_noise(X, sigma=0.1):
-    """Apply Gaussian Noise
-
-    Adds noise from standard normal distribution with standard deviation sigma.
+    """Adds noise from standard normal 
+    distribution with standard deviation sigma.
 
     Args:
         X (numpy.ndarray):
             Input array (image data).
-        sigma (float):
-            Standard deviation of the normal 
-            distribution. Defaults to 0.1.
+        sigma (float, optional):
+            Standard deviation of the normal distribution. 
+            If unspecified, defaults to 0.1.
 
     Returns:
-        numpy.ndarray: Input array after applying gaussian noise.
+        numpy.ndarray: 
+            Input array after applying gaussian noise.
     """
     noise = np.random.normal(loc=0.0, scale=sigma, size=X.shape)
     return X + noise
 
 def show_image(X):
-    """Show Image
-
-    Displays image using `matplotlib`.
+    """Displays image using `matplotlib`.
 
     Args:
         X (numpy.ndarray):
@@ -56,9 +52,7 @@ def show_image(X):
     plt.imshow(np.clip(X + 0.5, 0, 1))
 
 def visualize(X, encoder, decoder):
-    """Visualize
-
-    Draws original, encoded and decoded images.
+    """Draws original, encoded and decoded images.
     
     Args:
         X (numpy.ndarray):
