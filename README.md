@@ -1,2 +1,3 @@
-# denoiser
-Convolutional Autoencoder for Denoising Images
+# Denoiser
+
+Denoising Images using Convolutional Autoencoder.
