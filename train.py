@@ -15,7 +15,7 @@ from model import create_pca_autoencoder, create_deep_conv_autoencoder
     '-mt', 
     '--model-type', 
     default='deep', 
-    help='Type of model for training [pca(linear)/deep(conv)] - please provide the same flag when training a pre-trained model'
+    help='Type of model for training [pca(linear)/deep(conv)]'
 )
 @click.option(
     '-lr', 
@@ -73,45 +73,77 @@ def train(model_type, learning_rate, batch_size, num_epochs, save_every, tensorb
 
     reset_tf_session()
 
-    if os.path.exists('models/autoencoder.h5'):
-        logging.info('loading pre-trained {} autoencoder'.format(model_type.upper()))
-        autoencoder = keras.models.load_model('models/autoencoder.h5')
-    elif model_type == 'pca':
+    if model_type == 'pca':
         logging.info('creating PCA autoencoder')
         autoencoder = create_pca_autoencoder(IMG_SHAPE, emb_size=32)
+
+        logging.info('training PCA autoencoder')
+        autoencoder.fit(
+            x=X_train, 
+            y=X_train,
+            batch_size=batch_size,
+            epochs=num_epochs,
+            validation_data=(X_test, X_test),
+            verbose=1
+        )
+
+        logging.info('evaluating PCA autoencoder')
+        mse = autoencoder.evaluate(
+            X_test,
+            X_test,
+            verbose=1
+        )
+        logging.info("MSE: {:.6f}".format(mse))
+
+        logging.info('visualizing reconstructions of faces in test set')
+        for i in range(5):
+            img = X_test[i]
+            visualize(img, autoencoder.layers[1], autoencoder.layers[2])
+
     elif model_type == 'deep':
-        logging.info('creating DeepConv autoencoder')
-        autoencoder = create_deep_conv_autoencoder(IMG_SHAPE, emb_size=32)
+        if os.path.exists('models/autoencoder.h5'):
+            logging.info('loading pre-trained DeepConv denoising autoencoder')
+            autoencoder = keras.models.load_model('models/autoencoder.h5')
+        else:
+            logging.info('creating DeepConv denoising autoencoder')
+            autoencoder = create_deep_conv_autoencoder(IMG_SHAPE, emb_size=512)
+
+        callbacks = configure_callbacks(save_every, tensorboard_vis)
+
+        logging.info('training DeepConv denoising autoencoder on noisy images')
+        for epoch in range(num_epochs):
+            X_train_noise = apply_gaussian_noise(X_train)
+            X_test_noise = apply_gaussian_noise(X_test)
+            history = autoencoder.fit(
+                x=X_train_noise, 
+                y=X_train, 
+                epochs=1,
+                validation_data=(X_test_noise, X_test),
+                callbacks=callbacks,
+                verbose=1
+            )
+            logging.info('Epoch {}/{}  -  loss: {:.6f}  -  val loss: {:.6f}\n'
+                .format(epoch + 1, num_epochs, history.history['loss'][0], history.history['val_loss'][0]))
+
+        logging.info('saving DeepConv denoising autoencoder to `models/autoencoder.h5`')
+        autoencoder.save('models/autoencoder.h5')
+
+        X_test_noise = apply_gaussian_noise(X_test)
+
+        logging.info('evaluating DeepConv denoising autoencoder')
+        denoising_mse = autoencoder.evaluate(
+            X_test_noise, 
+            X_test, 
+            verbose=1
+        )
+        logging.info('Denoising MSE: {:.6f}'.format(denoising_mse))
+
+        logging.info('visualizing reconstructions of faces in test set')
+        for i in range(5):
+            img = X_test_noise[i]
+            visualize(img, autoencoder.layers[1], autoencoder.layers[2])
     else:
         raise UserWarning('Unrecognized model type!')
-
-    callbacks = configure_callbacks(save_every, tensorboard_vis)
-
-    logging.info('training {} autoencoder'.format(model_type.upper()))
-    autoencoder.fit(
-        x=X_train, 
-        y=X_train,
-        batch_size=batch_size,
-        epochs=num_epochs,
-        validation_data=(X_test, X_test),
-        callbacks=callbacks,
-        verbose=1
-    )
-    logging.info('saving {} autoencoder model to `models/autoencoder.h5`'.format(model_type.upper()))
-    autoencoder.save('models/autoencoder.h5')
-
-    logging.info('evaluating {} autoencoder'.format(model_type.upper()))
-    score = autoencoder.evaluate(
-        X_test,
-        X_test,
-        verbose=0
-    )
-    logging.info("MSE: {}".format(score))
-
-    logging.info('visualizing reconstructions of faces in test set')
-    for i in range(5):
-        img = X_test[i]
-        visualize(img, autoencoder.layers[1], autoencoder.layers[2])
 
 def configure_callbacks(save_every=1, tensorboard_vis=False):
     """Configure Callbacks 
