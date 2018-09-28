@@ -122,8 +122,7 @@ def configure_callbacks(save_every=1, tensorboard_vis=False):
         Refer to `train`.
 
     Returns:
-        list:
-            List containing configured callbacks.
+        list: List containing configured callbacks.
     """
     # checkpoint models only when `val_loss` impoves
     saver = keras.callbacks.ModelCheckpoint(

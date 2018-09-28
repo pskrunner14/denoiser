@@ -2,10 +2,24 @@ import keras
 import keras.layers as L
 import numpy as np
 
-"""
-Builds an Autoencoder Model using Encoder and Decoder
-"""
 def build_autoencoder(img_shape, encoder, decoder):
+    """Build Autoencoder
+
+    Builds a custom Autoencoder using Encoder and Decoder models.
+
+    Args:
+        img_shape (tuple):
+            Shape of input image.
+        encoder (keras.models.Sequential):
+            Encoder part of the autoencoder.
+        decoder (keras.models.Sequential):
+            Decoder part of the autoencoder.
+
+    Returns:
+        keras.model.Model:
+            The autoencoder model.
+    """
+    
     # Inputs and Outputs
     inp = L.Input(img_shape)
     embedding = encoder(inp)
@@ -21,7 +35,21 @@ def build_autoencoder(img_shape, encoder, decoder):
 Creates a Linear PCA Autoencoder
 """
 def create_pca_autoencoder(img_shape, emb_size):
-    
+    """Create PCA Autoencoder
+
+    Creates a Linear PCA Autoencoder.
+
+    Args:
+        img_shape (tuple):
+            Shape of input image.
+        emb_size (int):
+            No. of embedding dims for encoder output.
+
+    Returns:
+        keras.model.Model:
+            The autoencoder model.
+    """
+
     # Encoder (Image -> Embedding)
     encoder = keras.models.Sequential()
     encoder.add(L.InputLayer(img_shape))
@@ -36,10 +64,21 @@ def create_pca_autoencoder(img_shape, emb_size):
     
     return build_autoencoder(img_shape, encoder, decoder)
 
-"""
-Creates a Deep Convolutional Autoencoder
-"""
 def create_deep_conv_autoencoder(img_shape, emb_size):
+    """Create Deep Conv Autoencoder
+
+    Creates a Deep Convolutional Autoencoder.
+
+    Args:
+        img_shape (tuple):
+            Shape of input image.
+        emb_size (int):
+            No. of embedding dims for encoder output.
+
+    Returns:
+        keras.model.Model:
+            The autoencoder model.
+    """
 
     # Encoder (Image -> Embedding)
     encoder = keras.models.Sequential()

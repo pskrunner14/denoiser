@@ -12,7 +12,7 @@ def reset_tf_session():
     Resets the TensorFlow session for Keras `backend`.
 
     Returns:
-        tf.Session: newly created tensorflow session object.
+        tf.Session: New tensorflow session object.
     """
     default_session = tf.get_default_session()
     if default_session is not None:
@@ -39,8 +39,7 @@ def apply_gaussian_noise(X, sigma=0.1):
             distribution. Defaults to 0.1.
 
     Returns:
-        numpy.ndarray:
-            Input array after applying gaussian noise.
+        numpy.ndarray: Input array after applying gaussian noise.
     """
     noise = np.random.normal(loc=0.0, scale=sigma, size=X.shape)
     return X + noise
@@ -51,7 +50,8 @@ def show_image(X):
     Displays image using `matplotlib`.
 
     Args:
-        X (numpy.ndarray) - input array (image data).
+        X (numpy.ndarray):
+            Input array (image data).
     """
     plt.imshow(np.clip(X + 0.5, 0, 1))
 
@@ -61,9 +61,12 @@ def visualize(X, encoder, decoder):
     Draws original, encoded and decoded images.
     
     Args:
-        X (numpy.ndarray) - input array (image data).
-        encoder (keras.engine.sequential.Sequential) - encoder part of the autoencoder.
-        decoder (keras.engine.sequential.Sequential) - decoder part of the autoencoder.
+        X (numpy.ndarray):
+            Input array (image data).
+        encoder (keras.models.Sequential):
+            Encoder part of the autoencoder.
+        decoder (keras.models.Sequential):
+            Decoder part of the autoencoder.
     """
     emb = encoder.predict(X[None])[0]
     reco = decoder.predict(emb[None])[0]

@@ -11,13 +11,34 @@ ATTRS_FILE = "datasets/lfw_attributes.txt"  # http://www.cs.columbia.edu/CAVE/da
 IMAGES_DIR = "datasets/lfw-deepfunneled"  # http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz
 RAW_IMAGES_DIR = "datasets/lfw"  # http://vis-www.cs.umass.edu/lfw/lfw.tgz
 
-"""Load Dataset
-
-Loads the Labeled Faces in the Wild dataset
-(train/test split) and attributes into memory.
-"""
 def load_dataset(use_raw=False, dx=80, dy=80, dimx=45, dimy=45):
+    """Load Dataset
 
+    Loads the `Labeled Faces in the Wild` dataset with
+    train/test split and attributes into memory.
+
+    Args:
+        use_raw (bool):
+            Flag for using raw data or not. Defaults to `False`.
+        dx (int):
+            x co-ordinate to crop the images. Defaults to 80.
+        dy (int):
+            y co-ordinate to crop the images. Defaults to 80.
+        dimx (int):
+            Width dim of the images. Defaults to 45.
+        dimy (int):
+            Height dim of the images. Defaults to 45.
+    
+    Returns:
+        numpy.ndarray:
+            Training data for the model.
+        numpy.ndarray:
+            Testing data for the model.
+        list:
+            Shape of images in the training set.
+        pandas.DataFrame:
+            Dataframe consisting of attribute data of people in the dataset.
+    """
     # read attrs
     df_attrs = pd.read_csv(ATTRS_FILE, sep='\t', skiprows=1)
     df_attrs.columns = list(df_attrs.columns)[1: ] + ["NaN"]
